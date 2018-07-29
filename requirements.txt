@@ -1,0 +1,6 @@
+setuptools>=38.3.0
+earthengine-api>=0.1.138
+prompt_toolkit>=1.0.15
+pendulum>=2.0.2
+Pygments>=2.2.0
+gitpython>=2.1.11

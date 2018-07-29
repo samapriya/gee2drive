@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import argparse,os,getpass,csv
+import argparse,os,getpass,csv,sys
 import subprocess
 from os.path import expanduser
 from idsearch import idsearch
@@ -8,6 +8,14 @@ from bandtypes import imgexp
 from export import exp
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
+#Check if Earth Engine API is installed and authenticated
+try:
+    import ee
+    ee.Initialize()
+except Exception:
+    print("Initialize Earth Engine")
+    subprocess.call('earthengine authenticate',shell=True)
+    
 def term():
     subprocess.call('python int_repl.py',shell=True)
 def term_from_parser(args):

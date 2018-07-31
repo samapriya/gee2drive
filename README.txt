@@ -1,6 +1,9 @@
 gee2drive: Download Earth Engine Public and Private assets to Google Drive
 ==========================================================================
 
+`DOI <https://doi.org/10.5281/zenodo.1323937>`__ `PyPI
+version <https://badge.fury.io/py/gee2drive>`__
+
 Google Earth Engine currently allows you to export images and assets as
 either GeoTiff files or TFrecords. The system splits the files if the
 estimated size is greater than 2GB which is the upper limit and needs

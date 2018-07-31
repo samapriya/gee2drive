@@ -127,7 +127,7 @@ optional arguments:
 ```
 
 ### gee2drive export
-Finally the export tool, that lets you export an image or a collection clipped to your AOI. This makes use of the bandlist you exported. Incase you are exporting an image and not a collection you don't need a start and end date. The tool uses the bounds() function to use a bounding box incase the geometry has a complex geometry or too many vertices simply use the operator ```bb```.
+Finally the export tool, that lets you export an image or a collection clipped to your AOI. This makes use of the bandlist you exported. Incase you are exporting an image and not a collection you don't need a start and end date. The tool uses the bounds() function to use a bounding box incase the geometry has a complex geometry or too many vertices simply use the operator ```bb```. If the geojson/json/kml keeps giving parsing error go to [geojson.io](geojson.io)
 
 ```
 usage: gee2drive export [-h] [--id ID] [--type TYPE] [--folder FOLDER]
@@ -139,7 +139,7 @@ optional arguments:
   --id ID              Full path for collection or image
   --type TYPE          Type whether image or collection
   --folder FOLDER      Drive folder path
-  --aoi AOI            Full path to geojson to be used for bounds
+  --aoi AOI            Full path to geojson/json/kml to be used for bounds
 
 Optional named arguments for image collection only:
   --start START        Start date to filter image
@@ -151,8 +151,7 @@ Optional named arguments for image collection only:
 ```
 
 A typical setup would be
-```gee2drive export --id "COPERNICUS/S2" --folder "sentinel-export" --aoi "C:\Users\samapriya\Box Sync\IUB\Pycodes\Ap
-plications and Tools\Planet Tools\Standalone Tools\skysat-aoi\boulder.geojson" --start "2018-02-01" --end "2018-03-01"
+```gee2drive export --id "COPERNICUS/S2" --folder "sentinel-export" --aoi "C:\Users\sam\boulder.geojson" --start "2018-02-01" --end "2018-03-01"
 --bandlist ['B2','B3','B4'] --operator "bb" --type "collection"
 ```
 
@@ -168,11 +167,18 @@ os.chdir(head)
 sys.path.append(head)
 from export import exp
 ee.Initialize()
-exp(collection=ee.ImageCollection('LANDSAT/LC08/C01/T1_SR').filterMetadata('CLOUD_COVER','less_than',20),folderpath="l8-out",start="2018-02-01",end="2018-06-01",geojson=r"C:\Users\samapriya\Box Sync\IUB\Pycodes\Applications and Tools\Planet Tools\Standalone Tools\skysat-aoi\boulder.geojson",bandnames="['B1','B2']",operator="bb",typ="ImageCollection")
+exp(collection=ee.ImageCollection('LANDSAT/LC08/C01/T1_SR').filterMetadata('CLOUD_COVER','less_than',20),
+    folderpath="l8-out",start="2018-02-01",end="2018-06-01",
+    geojson=r"C:\Users\sam\boulder.geojson",bandnames="['B1','B2']",
+    operator="bb",typ="ImageCollection")
 ```
 
 
 #### Changelog
+
+##### v0.0.4
+* Can now parse gejson, json,kml
+* Minor fixes and general improvements
 
 ##### v0.0.3
 * Minor Fixes

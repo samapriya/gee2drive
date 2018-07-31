@@ -89,8 +89,6 @@ def main(args=None):
             )
     parser_imgexp.add_argument('--id',
                                help='full path for collection or image')
-    parser_exp.add_argument('--type',
-                            help='Type whether image or collection')
     parser_imgexp.set_defaults(func=imgexp_from_parser)
 
     parser_exp = subparsers.add_parser('export',
@@ -98,8 +96,10 @@ def main(args=None):
     parser_exp.add_argument('--id',
                             help='Full path for collection or image')
     parser_exp.add_argument('--folder', help='Drive folder path')
+    parser_exp.add_argument('--type',
+                            help='Type whether image or collection')
     parser_exp.add_argument('--aoi',
-                            help='Full path to geojson to be used for bounds'
+                            help='Full path to geojson/json/kml to be used for bounds'
                             )
     optional_named = \
         parser_exp.add_argument_group('Optional named arguments for image collection only'

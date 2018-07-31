@@ -4,7 +4,8 @@ import json
 import time
 import sys
 import ast
-
+from kml2ee import kml2coord
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 try:
     ee.Initialize()
 except Exception, e:
@@ -17,12 +18,26 @@ def exp(collection,folderpath,start,end,
     geojson,bandnames,operator,typ):
     #typ = ee.data.getInfo(collection)['type']
     bandnames = ast.literal_eval(bandnames)
+    try:
+        if geojson.endswith('.geojson'):
+            with open(geojson) as aoi:
+                aoi_resp = json.load(aoi)
+                aoi_geom = ee.Geometry.Polygon(aoi_resp['features'
+                        ][0]['geometry']['coordinates'])
+                boundbox = aoi_geom.bounds()
+        elif geojson.endswith('.json'):
+            with open (geojson) as aoi:
+                aoi_resp=json.load(aoi)
+                aoi_geom=ee.Geometry.Polygon(aoi_resp['config'][0]['config']['coordinates'])
+                boundbox=aoi_geom.bounds()
+        elif geojson.endswith('.kml'):
+            getcoord=kml2coord(geojson)
+            aoi_geom=ee.Geometry.Polygon(getcoord)
+            boundbox=aoi_geom.bounds()           
+    except Exception as e:
+        print('Could not parse geometry')
+        
     if typ == 'image' and operator == 'bb':
-        with open(geojson) as aoi:
-            aoi_resp = json.load(aoi)
-            aoi_geom = ee.Geometry.Polygon(aoi_resp['features'
-                    ][0]['geometry']['coordinates'])
-            boundbox = aoi_geom.bounds()
         userCollection = \
             ee.ImageCollection(collection).select(bandnames)
         clipname = os.path.basename(geojson).split('.')[0]
@@ -43,10 +58,6 @@ def exp(collection,folderpath,start,end,
         print 'Finished creating export task'
         print ''
     elif typ == 'image' and operator == None:
-        with open(geojson) as aoi:
-            aoi_resp = json.load(aoi)
-            aoi_geom = ee.Geometry.Polygon(aoi_resp['features'
-                    ][0]['geometry']['coordinates'])
         userCollection = \
             ee.ImageCollection(collection).select(bandnames)
         clipname = os.path.basename(geojson).split('.')[0]
@@ -66,11 +77,6 @@ def exp(collection,folderpath,start,end,
         print 'Finished creating export task'
         print ''
     elif typ == 'collection' and operator == 'bb':
-        with open(geojson) as aoi:
-            aoi_resp = json.load(aoi)
-            aoi_geom = ee.Geometry.Polygon(aoi_resp['features'
-                    ][0]['geometry']['coordinates'])
-            boundbox = aoi_geom.bounds()
         userCollection = \
             ee.ImageCollection(collection).filterBounds(aoi_geom).filterDate(start,
                 end).select(bandnames)
@@ -115,10 +121,6 @@ def exp(collection,folderpath,start,end,
             print 'Finished creating export task'
             print ''
     elif typ == 'collection' and operator == None:
-        with open(geojson) as aoi:
-            aoi_resp = json.load(aoi)
-            aoi_geom = ee.Geometry.Polygon(aoi_resp['features'
-                    ][0]['geometry']['coordinates'])
         userCollection = \
             ee.ImageCollection(collection).filterBounds(aoi_geom).filterDate(start,
                 end).select(bandnames)

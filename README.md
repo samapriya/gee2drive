@@ -151,7 +151,8 @@ Optional named arguments for image collection only:
 A typical setup would be
 ```gee2drive export --id "COPERNICUS/S2" --folder "sentinel-export" --aoi "C:\Users\samapriya\Box Sync\IUB\Pycodes\Ap
 plications and Tools\Planet Tools\Standalone Tools\skysat-aoi\boulder.geojson" --start "2018-02-01" --end "2018-03-01"
---bandlist ['B2','B3','B4'] --operator "bb" --type "collection"```
+--bandlist ['B2','B3','B4'] --operator "bb" --type "collection"
+```
 
 Also as promised earlier , there is a way to add additional filters and then pass it through the export function here is how and I have included this in the Examples folder. This for example uses the Landsat collection but applies the Cloud cover filter before passing it for export
 

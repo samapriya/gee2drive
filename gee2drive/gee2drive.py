@@ -8,6 +8,7 @@ import subprocess
 from idsearch import idsearch
 from bandtypes import imgexp
 from export import exp
+from exp_report import intersect
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 path=os.path.dirname(os.path.realpath(__file__))
 # Check if Earth Engine API is installed and authenticated
@@ -43,6 +44,12 @@ def refresh_from_parser(args):
 def idsearch_from_parser(args):
     idsearch(mname=args.name)
 
+def intersect_from_parser(args):
+    intersect(start=args.start,
+              end=args.end,
+              geojson=args.aoi,
+              operator=args.operator,
+              output=args.report)
 
 def imgexp_from_parser(args):
     imgexp(collection=args.id)
@@ -83,6 +90,28 @@ def main(args=None):
                                  help='Name or part of name to search for'
                                  )
     parser_idsearch.set_defaults(func=idsearch_from_parser)
+
+
+    parser_intersect = subparsers.add_parser('intersect',
+            help='Exports a report of all assets(Personal & GEE) intersecting with provided geometry')
+    parser_intersect.add_argument('--start',
+                                help='Start date to filter image',
+                                default=None)
+    parser_intersect.add_argument('--end', help='End date to filter image'
+                                , default=None)
+    parser_intersect.add_argument('--aoi',
+                            help='Full path to geojson/json/kml to be used for bounds'
+                            )
+    parser_intersect.add_argument('--report',
+                                help='Full path where the report will be exported including type, path & number of intersects'
+                                , default=None)
+    optional_named = \
+    parser_intersect.add_argument_group('Optional named arguments for geometry only'
+        )
+    optional_named.add_argument('--operator',
+                                help='Use bb for Bounding box incase the geometry is complex or has too many vertices'
+                                , default=None)
+    parser_intersect.set_defaults(func=intersect_from_parser)
 
     parser_imgexp = subparsers.add_parser('bandtype',
             help='Prints bandtype and generates list to be used for export'

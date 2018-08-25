@@ -19,13 +19,14 @@ def readme():
 
 setuptools.setup(
     name='gee2drive',
-    version='0.0.4',
+    version='0.0.7',
     packages=find_packages(),
     url='https://github.com/samapriya/gee2drive',
     install_requires=['earthengine-api>=0.1.138','gitpython>=2.1.11','prompt_toolkit==1.0.15','shapely>=1.6.4',
                       'pendulum>=2.0.2','Pygments>=2.2.0'],
     license='Apache 2.0',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     classifiers=(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

@@ -1,4 +1,4 @@
-gee2drive: Download Earth Engine Public and Private assets to Google Drive
+﻿gee2drive: Download Earth Engine Public and Private assets to Google Drive
 ==========================================================================
 
 `DOI <https://doi.org/10.5281/zenodo.1323937>`__ `PyPI
@@ -50,6 +50,7 @@ Table of contents
    -  `gee2drive Terminal <#gee2drive-terminal>`__
    -  `gee2drive refresh <#gee2drive-refresh>`__
    -  `gee2drive idsearch <#gee2drive-idsearch>`__
+   -  `gee2drive intersect <#gee2drive-intersect>`__
    -  `gee2drive bandtype <#gee2drive-bandtype>`__
    -  `gee2drive export <#gee2drive-export>`__
 
@@ -193,6 +194,34 @@ or “sentinel” and it should still work
    optional arguments:
      -h, --help   show this help message and exit
      --name NAME  Name or part of name to search for
+
+gee2drive intersect
+~~~~~~~~~~~~~~~~~~~
+
+This tool allows you to export a report of every asset present in the
+Earth Engine dataset list and your personal assets that intersects
+with your geometry. The tool expects you to provide a start and end date
+and a geometry to filter. The tool uses the bounds() function to use a bounding box
+incase the geometry has a complex geometry or too many vertices simply
+use the operator ``bb``. If the geojson/json/kml keeps giving parsing
+error go to `geojson.io <geojson.io>`__
+
+::
+
+  usage: gee2drive intersect [-h] [--start START] [--end END] [--aoi AOI]
+                                [--report REPORT] [--operator OPERATOR]
+
+  optional arguments:
+    -h, --help           show this help message and exit
+    --start START        Start date to filter image
+    --end END            End date to filter image
+    --aoi AOI            Full path to geojson/json/kml to be used for bounds
+    --report REPORT      Full path where the report will be exported including
+                         type, path & number of intersects
+
+  Optional named arguments for geometry only:
+    --operator OPERATOR  Use bb for Bounding box incase the geometry is complex
+                         or has too many vertices
 
 gee2drive bandtype
 ~~~~~~~~~~~~~~~~~~

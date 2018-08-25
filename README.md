@@ -20,6 +20,7 @@ In the future I will try to integrate some other functionalities to this environ
     * [gee2drive Terminal](#gee2drive-terminal)
     * [gee2drive refresh](#gee2drive-refresh)
     * [gee2drive idsearch](#gee2drive-idsearch)
+    * [gee2drive intersect](#gee2drive-intersect)
     * [gee2drive bandtype](#gee2drive-bandtype)
     * [gee2drive export](#gee2drive-export)
 
@@ -115,6 +116,27 @@ optional arguments:
   --name NAME  Name or part of name to search for
 ```
 
+### gee2drive intersect
+This tool allows you to export a report of every asset present in the Earth Engine dataset list and your personal assets that intersects
+with your geometry. The tool expects you to provide a start and end date and a geometry to filter. The tool uses the bounds() function to use a bounding box incase the geometry has a complex geometry or too many vertices simply use the operator ``bb``. If the geojson/json/kml keeps giving parsing error go to [geojson.io](geojson.io)
+
+```
+usage: gee2drive intersect [-h] [--start START] [--end END] [--aoi AOI]
+                              [--report REPORT] [--operator OPERATOR]
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --start START        Start date to filter image
+  --end END            End date to filter image
+  --aoi AOI            Full path to geojson/json/kml to be used for bounds
+  --report REPORT      Full path where the report will be exported including
+                       type, path & number of intersects
+
+Optional named arguments for geometry only:
+  --operator OPERATOR  Use bb for Bounding box incase the geometry is complex
+                       or has too many vertices
+```
+
 ### gee2drive bandtype
 Export requires all the bandtypes to be of the same kind. To do this, I simply generate the band types for you and you can select the band list you want , remember to paste it as a list.
 
@@ -175,6 +197,10 @@ exp(collection=ee.ImageCollection('LANDSAT/LC08/C01/T1_SR').filterMetadata('CLOU
 
 
 #### Changelog
+
+##### v0.0.6
+* Now export report of all assets intersecting with geometry & date range
+* Minor fixes and general improvements
 
 ##### v0.0.4
 * Can now parse gejson, json,kml

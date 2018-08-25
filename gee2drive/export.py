@@ -33,10 +33,10 @@ def exp(collection,folderpath,start,end,
         elif geojson.endswith('.kml'):
             getcoord=kml2coord(geojson)
             aoi_geom=ee.Geometry.Polygon(getcoord)
-            boundbox=aoi_geom.bounds()           
+            boundbox=aoi_geom.bounds()            
     except Exception as e:
         print('Could not parse geometry')
-        
+        print(e)        
     if typ == 'image' and operator == 'bb':
         userCollection = \
             ee.ImageCollection(collection).select(bandnames)

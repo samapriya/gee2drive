@@ -19,7 +19,7 @@ def readme():
 
 setuptools.setup(
     name='gee2drive',
-    version='0.0.7',
+    version='0.0.9',
     packages=find_packages(),
     url='https://github.com/samapriya/gee2drive',
     install_requires=['earthengine-api>=0.1.138','gitpython>=2.1.11','prompt_toolkit==1.0.15','shapely>=1.6.4',

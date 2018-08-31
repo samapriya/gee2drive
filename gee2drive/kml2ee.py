@@ -5,7 +5,7 @@ import json
 poly_table = []
 
 def kml2coord(filename):
-    data = open(r"C:\Users\samapriya\Box Sync\IUB\Paper Discussions\Deltas Project Edmond NSF 2016\Analysis\Fishnet-Grid\grid_split_kml\Grid_6.kml")
+    data = open(filename)
     tree = ElementTree.parse(data)
     namespace = tree.getroot().tag[1:].split("}")[0]
     placemarks = tree.findall(".//{%s}Placemark" % namespace)

@@ -5,162 +5,194 @@ import time
 import sys
 import ast
 from kml2ee import kml2coord
+
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+
 try:
     ee.Initialize()
-except Exception, e:
-    print 'Authenticate Earth Engine first and rerun program'
-    time.sleep(2)
-    os.system('earthengine authenticate')
+except Exception as e:
+    sys.exit("Authenticate Earth Engine first and rerun program")
 
 
-def exp(collection,folderpath,start,end,
-    geojson,bandnames,operator,typ):
-    #typ = ee.data.getInfo(collection)['type']
+def exp(collection, folderpath, start, end, geojson, bandnames, operator, typ, ff):
+    # typ = ee.data.getInfo(collection)['type']
     bandnames = ast.literal_eval(bandnames)
     try:
-        if geojson.endswith('.geojson'):
+        if geojson.endswith(".geojson"):
             with open(geojson) as aoi:
                 aoi_resp = json.load(aoi)
-                aoi_geom = ee.Geometry.Polygon(aoi_resp['features'
-                        ][0]['geometry']['coordinates'])
+                aoi_geom = ee.Geometry.Polygon(
+                    aoi_resp["features"][0]["geometry"]["coordinates"]
+                )
                 boundbox = aoi_geom.bounds()
-        elif geojson.endswith('.json'):
-            with open (geojson) as aoi:
-                aoi_resp=json.load(aoi)
-                aoi_geom=ee.Geometry.Polygon(aoi_resp['config'][0]['config']['coordinates'])
-                boundbox=aoi_geom.bounds()
-        elif geojson.endswith('.kml'):
-            getcoord=kml2coord(geojson)
-            aoi_geom=ee.Geometry.Polygon(getcoord)
-            boundbox=aoi_geom.bounds()            
+        elif geojson.endswith(".json"):
+            with open(geojson) as aoi:
+                aoi_resp = json.load(aoi)
+                aoi_geom = ee.Geometry.Polygon(
+                    aoi_resp["config"][0]["config"]["coordinates"]
+                )
+                boundbox = aoi_geom.bounds()
+        elif geojson.endswith(".kml"):
+            getcoord = kml2coord(geojson)
+            aoi_geom = ee.Geometry.Polygon(getcoord)
+            boundbox = aoi_geom.bounds()
     except Exception as e:
-        print('Could not parse geometry')
-        print(e)        
-    if typ == 'image' and operator == 'bb':
-        userCollection = \
-            ee.ImageCollection(collection).select(bandnames)
-        clipname = os.path.basename(geojson).split('.')[0]
-        fileName = str(collection).split('/')[-1] + '_' + str(clipname) \
-            + '_bb'
+        print("Could not parse geometry")
+        print(e)
+    if typ == "image" and operator == "bb":
+        userCollection = ee.ImageCollection(collection).select(bandnames)
+        clipname = os.path.basename(geojson).split(".")[0]
+        fileName = str(collection).split("/")[-1] + "_" + str(clipname) + "_bb"
         firstband = ee.Image(collection).bandNames().getInfo()[0]
-        scale = \
-            int(ee.Image(collection).select(firstband).projection().nominalScale().getInfo())
+        scale = int(
+            ee.Image(collection).select(firstband).projection().nominalScale().getInfo()
+        )
         task = ee.batch.Export.image.toDrive(
             image=ee.Image(collection).clip(boundbox),
             description=fileName,
             folder=folderpath,
             maxPixels=1e13,
-            region=boundbox.getInfo()['coordinates'][0],
+            region=boundbox.getInfo()["coordinates"][0],
             scale=scale,
-            )
+        )
         task.start()
-        print 'Finished creating export task'
-        print ''
-    elif typ == 'image' and operator == None:
-        userCollection = \
-            ee.ImageCollection(collection).select(bandnames)
-        clipname = os.path.basename(geojson).split('.')[0]
-        fileName = str(collection).split('/')[-1] + '_' + str(clipname)
+        print("Finished creating export tasks")
+        print("")
+    elif typ == "image" and operator == None:
+        userCollection = ee.ImageCollection(collection).select(bandnames)
+        clipname = os.path.basename(geojson).split(".")[0]
+        fileName = str(collection).split("/")[-1] + "_" + str(clipname)
         firstband = ee.Image(collection).bandNames().getInfo()[0]
-        scale = \
-            int(ee.Image(collection).select(firstband).projection().nominalScale().getInfo())
+        scale = int(
+            ee.Image(collection).select(firstband).projection().nominalScale().getInfo()
+        )
         task = ee.batch.Export.image.toDrive(
             image=ee.Image(collection).clip(aoi_geom),
             description=fileName,
             folder=folderpath,
             maxPixels=1e13,
-            region=aoi_geom.getInfo()['coordinates'][0],
+            region=aoi_geom.getInfo()["coordinates"][0],
             scale=scale,
-            )
+        )
         task.start()
-        print 'Finished creating export task'
-        print ''
-    elif typ == 'collection' and operator == 'bb':
-        userCollection = \
-            ee.ImageCollection(collection).filterBounds(aoi_geom).filterDate(start,
-                end).select(bandnames)
-        clipname = os.path.basename(geojson).split('.')[0]
-        imageList = \
-            ee.List(userCollection.toList(userCollection.size().add(1)))
+        print("Finished creating export tasks")
+        print("")
+    elif typ == "collection" and operator == "bb":
+        userCollection = (
+            ee.ImageCollection(collection)
+            .filterBounds(aoi_geom)
+            .filterDate(start, end)
+            .select(bandnames)
+        )
+        clipname = os.path.basename(geojson).split(".")[0]
+        imageList = ee.List(userCollection.toList(userCollection.size().add(1)))
         length = userCollection.size().getInfo()
         if int(length) == 0:
-            print 'No images found exiting export function'
+            print("No images found exiting export function")
             sys.exit()
         else:
-            print 'Total images in filtered collection: ' + str(length)
+            print("Total images in filtered collection: " + str(length))
 
             def exportImage(img):
-                fileName = ee.String(img.get('system:index')).getInfo()
+                fileName = ee.String(img.get("system:index")).getInfo()
                 firstband = img.bandNames().getInfo()[0]
-                scale = \
-                    int(img.select(firstband).projection().nominalScale().getInfo())
+                scale = int(img.select(firstband).projection().nominalScale().getInfo())
 
                 # get geometry of image
 
                 task = ee.batch.Export.image.toDrive(
                     image=img.clip(boundbox),
-                    description=fileName + '_' + str(clipname) + '_bb',
+                    description=fileName + "_" + str(clipname) + "_bb",
                     folder=folderpath,
                     maxPixels=1e13,
-                    region=boundbox.getInfo()['coordinates'][0],
+                    region=boundbox.getInfo()["coordinates"][0],
                     scale=scale,
-                    )
+                )
                 task.start()
 
             index = 0
             while index < int(length):
-                print 'Export #: ' + str(index + 1) + ' of ' \
-                    + str(length)
+                print("Export #: " + str(index + 1) + " of " + str(length))
                 img2export = ee.Image(imageList.get(index))
                 exportImage(img2export)
                 index = index + 1
 
                 # time.sleep(10)
 
-            print 'Finished creating export task'
-            print ''
-    elif typ == 'collection' and operator == None:
-        userCollection = \
-            ee.ImageCollection(collection).filterBounds(aoi_geom).filterDate(start,
-                end).select(bandnames)
-        clipname = os.path.basename(geojson).split('.')[0]
-        imageList = \
-            ee.List(userCollection.toList(userCollection.size().add(1)))
+            print("Finished creating export tasks")
+            print("")
+    elif typ == "collection" and operator == None:
+        userCollection = (
+            ee.ImageCollection(collection)
+            .filterBounds(aoi_geom)
+            .filterDate(start, end)
+            .select(bandnames)
+        )
+        clipname = os.path.basename(geojson).split(".")[0]
+        imageList = ee.List(userCollection.toList(userCollection.size().add(1)))
         length = userCollection.size().getInfo()
         if int(length) == 0:
-            print 'No images found exiting export function'
+            print("No images found exiting export function")
             sys.exit()
         else:
-            print 'Total images in filtered collection: ' + str(length)
+            print("Total images in filtered collection: " + str(length))
 
             def exportImage(img):
-                fileName = ee.String(img.get('system:index')).getInfo()
+                fileName = ee.String(img.get("system:index")).getInfo()
                 firstband = img.bandNames().getInfo()[0]
-                scale = \
-                    int(img.select(firstband).projection().nominalScale().getInfo())
+                scale = int(img.select(firstband).projection().nominalScale().getInfo())
 
                 # get geometry of image
 
                 task = ee.batch.Export.image.toDrive(
                     image=img.clip(aoi_geom),
-                    description=fileName + '_' + str(clipname),
+                    description=fileName + "_" + str(clipname),
                     folder=folderpath,
                     maxPixels=1e13,
-                    region=aoi_geom.getInfo()['coordinates'][0],
+                    region=aoi_geom.getInfo()["coordinates"][0],
                     scale=scale,
-                    )
+                )
                 task.start()
 
             index = 0
             while index < int(length):
-                print 'Export #: ' + str(index + 1) + ' of ' \
-                    + str(length)
+                print("Export #: " + str(index + 1) + " of " + str(length))
                 img2export = ee.Image(imageList.get(index))
                 exportImage(img2export)
                 index = index + 1
 
                 # time.sleep(10)
 
-            print 'Finished creating export task'
-            print ''
+            print("Finished creating export tasks")
+            print("")
+    elif typ == "table" and operator == "bb":
+        if ff is None:
+            ff = "SHP"
+        userCollection = ee.FeatureCollection(collection)
+        clipname = os.path.basename(geojson).split(".")[0]
+        fileName = str(collection).split("/")[-1] + "_" + str(clipname) + "_bb"
+        task = ee.batch.Export.table.toDrive(
+            collection=ee.FeatureCollection(collection).filterBounds(boundbox),
+            description=fileName,
+            folder=folderpath,
+            fileFormat=ff,
+        )
+        task.start()
+        print("Finished creating export tasks")
+        print("")
+    elif typ == "table" and operator == None:
+        if ff is None:
+            ff = "SHP"
+        userCollection = ee.FeatureCollection(collection)
+        clipname = os.path.basename(geojson).split(".")[0]
+        fileName = str(collection).split("/")[-1] + "_" + str(clipname)
+        task = ee.batch.Export.table.toDrive(
+            collection=ee.FeatureCollection(collection),
+            description=fileName,
+            folder=folderpath,
+            fileFormat=ff,
+        )
+        task.start()
+        print("Finished creating export tasks")
+        print("")

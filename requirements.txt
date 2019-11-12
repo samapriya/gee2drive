@@ -1,5 +1,7 @@
-earthengine-api>=0.1.191
-gitpython>=2.1.11
+setuptools>=38.3.0
+earthengine-api>=0.1.138
+prompt_toolkit==1.0.15
 pendulum>=2.0.2
 Pygments>=2.2.0
-prettytable>=0.7.2
+gitpython>=2.1.11
+shapely>=1.6.4

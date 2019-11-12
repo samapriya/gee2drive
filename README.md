@@ -1,6 +1,6 @@
 # gee2drive: Download Earth Engine Public and Private assets to Google Drive
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1324456.svg)](https://doi.org/10.5281/zenodo.1324456)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3539356.svg)](https://doi.org/10.5281/zenodo.3539356)
 [![PyPI version](https://badge.fury.io/py/gee2drive.svg)](https://badge.fury.io/py/gee2drive)
 
 Google Earth Engine currently allows you to export images and assets as either GeoTiff files and tables as Shapefiles, GeoJSON, KML, KMZ or TFrecords. The system splits the files if the estimated size is greater than 2GB which is the upper limit and needs the geometry to be parsed in the form of either a fusion table, a user drawn geometry or a table imported into the user's assets. While the javascript frontend is great owing to the queryable catalog whereby you can search and and export your personal and private assets, the limitation lies in batch exports. To resolve this the python API access allows you to call batch export functions but now it is limited to checking for itersects first and running without having a queryable catalog. With the same idea I created this tool which allows you to run a terminal environment where your personal and general catalog images are part of a autosuggest feature. This tool allows you to look for images based on names for example " you can search for Sentinel and it will show you full path of images which have the word sentinel in the title". It also creates a report for your image collections and images so apart from the public datasets this can also find your own datasets as well. You can then generate bandlist to make sure all bands you are exporting are of the same type and then export all images that intersect you aoi.
@@ -10,6 +10,12 @@ The assumption here is
 * Every image in the give image have the same band structure, choose the bandlist that you know to common to all images
 * If the geomery is too complex use the operator feature to use a bounding box instead.
 * For now all it filters is geometry and date, and it is does not filter based on metadata (however in the examples folder I have shown how to import and use additional filter before exporting an image collection)
+
+Cite as
+```
+Samapriya Roy. (2019, November 12). samapriya/gee2drive: gee2drive: Google Earth Engine to Drive Export Manager (Version 0.1.0).
+Zenodo. http://doi.org/10.5281/zenodo.3539356
+```
 
 ## Table of contents
 * [Installation](#installation)
@@ -165,8 +171,8 @@ Optional named arguments for image collection only:
 ```
 
 A typical setup would be
-```gee2drive export --id "COPERNICUS/S2" --folder "sentinel-export" --aoi "C:\Users\sam\boulder.geojson" --start "2018-02-01" --end "2018-03-01"
---bandlist ['B2','B3','B4'] --operator "bb" --type "collection"
+```
+gee2drive export --id "COPERNICUS/S2" --folder "sentinel-export" --aoi "C:\Users\sam\boulder.geojson" --start "2018-02-01" --end "2018-03-01" --bandlist ['B2','B3','B4'] --operator "bb" --type "collection"
 ```
 
 #### Changelog
